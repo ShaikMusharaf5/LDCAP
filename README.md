@@ -232,23 +232,6 @@ Final year/
 
 Because the app searches parent folders, it can still find `xe_best_model.pt` in that setup.
 
-## Troubleshooting
-
-### `Model load failed`
-
-Check:
-
-- the checkpoint path is valid
-- the checkpoint matches the transformer architecture in `models/ldcap_transformer.py`
-- the vocab file exists and is readable
-
-### `vocab.json not found`
-
-Place the vocab file in one of these locations:
-
-- project root
-- `models/`
-- `checkpoints/`
 
 
 ## Future Improvements
