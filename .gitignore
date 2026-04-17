@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.env
+
+# Large model files (upload separately)
+checkpoints/*.pt
+checkpoints/*.pth
+vocab.json
+test_image.jpg
+
+# Keep the folder
+!checkpoints/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit cache
+.streamlit/secrets.toml
