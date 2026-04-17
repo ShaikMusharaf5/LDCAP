@@ -250,59 +250,6 @@ Place the vocab file in one of these locations:
 - `models/`
 - `checkpoints/`
 
-### Captions are poor or incorrect
-
-Possible reasons:
-
-- the checkpoint is not the best trained model
-- the checkpoint and inference feature extractor do not match
-- the model was trained with a different preprocessing or decoding setup
-
-### Slow startup
-
-This is normal on first run because:
-
-- PyTorch loads the checkpoint
-- Torchvision may initialize detection weights
-- Faster R-CNN feature extraction is relatively heavy on CPU
-
-### CPU is very slow
-
-Caption generation can take several seconds per image on CPU. GPU inference is recommended if available.
-
-### CUDA out of memory
-
-Try:
-
-- using `Greedy` instead of beam search
-- reducing other GPU workloads
-- running on CPU if needed
-
-## Deployment Notes
-
-If you upload this project to GitHub:
-
-- avoid committing large checkpoint files unless you really want them in the repo
-- add checkpoints to `.gitignore` if they are large or private
-- consider hosting large weights separately
-
-Common options:
-
-- GitHub Releases
-- Hugging Face Hub
-- Google Drive or another cloud file host
-
-## Suggested `.gitignore` Entries
-
-```gitignore
-venv/
-__pycache__/
-*.pyc
-checkpoints/*.pt
-checkpoints/*.pth
-checkpoints/*.ckpt
-checkpoints/*.bin
-```
 
 ## Future Improvements
 
@@ -312,22 +259,5 @@ checkpoints/*.bin
 - cloud deployment flow for large checkpoints
 - improved caption post-processing
 
-## License
 
-Add your preferred license here, for example:
 
-- MIT
-- Apache-2.0
-- GNU GPLv3
-
-If this project uses pretrained weights, datasets, or architecture code from another source, make sure their original licenses and attribution requirements are also respected.
-
-## Author
-
-Replace this section with your details before publishing:
-
-```text
-Name: Your Name
-Project: LDCAP
-GitHub: https://github.com/YOUR_USERNAME
-```
