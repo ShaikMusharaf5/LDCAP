@@ -53,8 +53,9 @@ Desktop.ini
 *.log
 
 # Large local training artifacts
-# Keep the checkpoints folder structure, but ignore generated weight files by default.
+# Keep the checkpoints folder structure, but ignore downloadable/generated runtime assets by default.
 checkpoints/*.pt
 checkpoints/*.pth
 checkpoints/*.ckpt
+vocab.json
 !checkpoints/.gitkeep

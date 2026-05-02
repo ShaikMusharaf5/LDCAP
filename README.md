@@ -15,7 +15,6 @@ This repository currently provides:
 - the XE training entry script
 - the SCST training entry script
 - the dataset validation script
-- the vocabulary file used by the current setup
 
 This release is best understood as a research software package for:
 
@@ -42,6 +41,11 @@ Kaggle notebook associated with this project:
 
 - `https://www.kaggle.com/code/musharaf5/caption`
   Purpose: companion Kaggle notebook for the training and experimentation workflow.
+
+Google Drive folder for downloadable runtime assets:
+
+- `https://drive.google.com/drive/folders/1oLuZ2tZIJuFgclueSr0xK92NQsiNMHi0`
+  Purpose: hosted download location for the trained model checkpoint and `vocab.json`.
 
 ## Contents Of This Release
 
@@ -79,7 +83,7 @@ File and folder roles:
 
 - `.streamlit/config.toml`: Streamlit theme and server configuration.
 - `checkpoints/`: expected location for model checkpoints such as `xe_best_model.pt` and `scst_best_model.pt`.
-- `checkpoints/scst_best_model.pt`: currently included trained SCST checkpoint in this release package.
+- `checkpoints/scst_best_model.pt`: expected final SCST checkpoint location after downloading the model from the Google Drive folder.
 - `models/ldcap_transformer.py`: transformer architecture used by the inference workflow.
 - `config.py`: central experiment configuration, model hyperparameters, training settings, and Kaggle dataset/checkpoint paths.
 - `film_sifting.py`: FiLM-conditioned visual cross-attention module used by the ASCAP decoder variant.
@@ -91,7 +95,7 @@ File and folder roles:
 - `train_scst.py`: stage-2 self-critical sequence training entry script.
 - `test_dataset.py`: dataset and vocabulary sanity-check script.
 - `ascap_encoder.py` and `ascap_decoder.py`: auxiliary ASCAP components that rely on external SCAP and local custom modules.
-- `vocab.json`: vocabulary used by the current project snapshot.
+- `vocab.json`: expected vocabulary file location after downloading it from the Google Drive folder.
 - `test_image.jpg`: sample image for a quick inference check.
 
 ## Software Requirements
@@ -166,7 +170,7 @@ This release is organized as the complete software package for reproducing the w
 - XE training entry
 - SCST training entry
 - ASCAP-related helper modules included in this package
-- trained SCST checkpoint and vocabulary used by the current setup
+- downloadable SCST checkpoint and vocabulary for the current setup
 
 The software assumes the dataset and runtime paths used by the training scripts and Kaggle inputs listed above.
 
@@ -266,6 +270,10 @@ If the code is executed outside Kaggle, those imports must be adapted or the sam
 
 Local inference is possible with the current repository if a compatible checkpoint and matching vocabulary are available.
 
+Download both files from:
+
+- `https://drive.google.com/drive/folders/1oLuZ2tZIJuFgclueSr0xK92NQsiNMHi0`
+
 Recommended placement:
 
 ```text
@@ -275,10 +283,11 @@ LDCAP-Caption/
 |-- vocab.json
 ```
 
-Checkpoint currently present in this repository:
+After downloading, place the files as:
 
 ```text
 checkpoints/scst_best_model.pt
+vocab.json
 ```
 
 The inference app automatically searches for checkpoints in:
