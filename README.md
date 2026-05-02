@@ -1,246 +1,352 @@
-# LDCAP
+# Zenodo Release Description: LDCAP / ASCAP Image Captioning
 
-LDCAP is a local Streamlit app for image caption generation using a transformer-based captioning model with bottom-up visual features extracted from Faster R-CNN.
+## Description
 
-It provides:
-- a polished web interface for image upload and caption generation
-- automatic checkpoint and vocabulary discovery
-- greedy and beam-search decoding
-- caption history with runtime and token breakdown
+This release contains the code and supporting files for an image captioning project based on transformer decoding, bottom-up visual region features, and ASCAP/SCST-style training. The package is intended to support reproducibility, software reuse, and later extension by other researchers.
 
-## Project Overview
+This repository currently provides:
 
-This project is organized around two main runtime files:
+- the Streamlit inference application
+- the inference pipeline
+- the project configuration module
+- the FiLM-based sifting attention module
+- the transformer model definition used by inference
+- the RIN module used by the ASCAP variant
+- the XE training entry script
+- the SCST training entry script
+- the dataset validation script
+- the vocabulary file used by the current setup
 
-- `app.py`: Streamlit UI, model discovery, generation controls, and caption history
-- `inference.py`: checkpoint loading, vocabulary loading, bottom-up feature extraction, and caption decoding
+This release is best understood as a research software package for:
 
-The current codebase expects a model compatible with the transformer defined in `models/ldcap_transformer.py`.
+- local inference and demonstration
+- documentation of the training and inference workflow
+- partial reproduction of the original experimental pipeline
 
-## Features
+## External Resources Required
 
-- Upload `jpg`, `jpeg`, `png`, and `webp` images
-- Generate captions with greedy or beam-search decoding
-- Automatically detect vocabulary files
-- Automatically detect model checkpoints from common locations
-- Display caption history, generation time, and token count
-- Cache the loaded model for faster repeated use in Streamlit
+The following Kaggle datasets were used in the project and should be cited as external inputs when reproducing the experiments:
 
-## Tech Stack
+1. `/kaggle/input/datasets/mariofrcrce/coco-bottom-up-features-adaptive-k`
+   Purpose: pre-extracted COCO adaptive-k bottom-up visual features used during training and validation.
+2. `/kaggle/input/datasets/musharaf5/coco-karpathy-split`
+   Purpose: Karpathy train/validation/test split and caption reference organization.
+3. `/kaggle/input/datasets/nadaibrahim/coco2014`
+   Purpose: original COCO 2014 image data and annotations.
+4. `/kaggle/input/datasets/musharaf5/scap-source-code`
+   Purpose: external SCAP source code used by `ascap_encoder.py` and `ascap_decoder.py`.
+5. `/kaggle/input/datasets/soumikrakshit/lol-dataset`
+   Purpose: not directly used by the scripts currently included in this repository snapshot. Retain only if reproducing a broader experiment outside the current package.
 
-- Python
-- Streamlit
-- PyTorch
-- Torchvision
-- Pillow
-- NumPy
+Kaggle notebook associated with this project:
 
-## Repository Structure
+- `https://www.kaggle.com/code/musharaf5/caption`
+  Purpose: companion Kaggle notebook for the training and experimentation workflow.
+
+## Contents Of This Release
+
+Current repository layout:
 
 ```text
-LDCAP/
-|- app.py
-|- inference.py
-|- requirements.txt
-|- README.md
-|- vocab.json
-|- .streamlit/
-|  |- config.toml
-|- checkpoints/
-|  |- scst_best_model.pt
-|- models/
-   |- __init__.py
-   |- ldcap_transformer.py
+LDCAP-Caption/
+|-- .streamlit/
+|   |-- config.toml
+|-- checkpoints/
+|-- models/
+|   |-- __init__.py
+|   |-- ldcap_transformer.py
+|-- venv/
+|-- __pycache__/
+|-- .gitignore
+|-- app.py
+|-- ascap_decoder.py
+|-- ascap_encoder.py
+|-- config.py
+|-- film_sifting.py
+|-- inference (1).py
+|-- inference.py
+|-- README.md
+|-- requirements.txt
+|-- rin.py
+|-- test_dataset.py
+|-- test_image.jpg
+|-- train_scst.py
+|-- train_xe.py
+|-- vocab.json
 ```
 
-## Requirements
+File and folder roles:
 
-- Python 3.10 or newer recommended
-- `pip`
-- Enough disk space for model checkpoints
-- Internet access on first run if Torchvision needs to download detector weights
+- `.streamlit/config.toml`: Streamlit theme and server configuration.
+- `checkpoints/`: expected location for model checkpoints such as `xe_best_model.pt` and `scst_best_model.pt`.
+- `checkpoints/scst_best_model.pt`: currently included trained SCST checkpoint in this release package.
+- `models/ldcap_transformer.py`: transformer architecture used by the inference workflow.
+- `config.py`: central experiment configuration, model hyperparameters, training settings, and Kaggle dataset/checkpoint paths.
+- `film_sifting.py`: FiLM-conditioned visual cross-attention module used by the ASCAP decoder variant.
+- `rin.py`: RIN module used by the ASCAP encoder variant.
+- `app.py`: Streamlit user interface for image upload and caption generation.
+- `inference.py`: primary inference pipeline used for checkpoint loading, vocabulary loading, Faster R-CNN feature extraction, and caption decoding.
+- `inference (1).py`: alternate inference file retained in the package as a supplementary local copy.
+- `train_xe.py`: stage-1 cross-entropy training entry script.
+- `train_scst.py`: stage-2 self-critical sequence training entry script.
+- `test_dataset.py`: dataset and vocabulary sanity-check script.
+- `ascap_encoder.py` and `ascap_decoder.py`: auxiliary ASCAP components that rely on external SCAP and local custom modules.
+- `vocab.json`: vocabulary used by the current project snapshot.
+- `test_image.jpg`: sample image for a quick inference check.
+
+## Software Requirements
+
+Recommended environment:
+
+- Python `3.10`
+- `pip` `24.x`
+- GPU recommended for training
+- CPU acceptable for inference, with slower runtime
+
+Pinned package versions currently recorded in `requirements.txt`:
+
+```text
+streamlit==1.35.0
+torch==2.6.0
+torchvision==0.21.0
+Pillow==10.4.0
+numpy==1.26.4
+tqdm==4.67.1
+```
+
+Additional training-only package:
+
+```text
+pycocoevalcap
+```
 
 ## Installation
 
-### 1. Clone the repository
+### Local installation
 
-```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-cd YOUR_REPOSITORY
-```
+Windows PowerShell:
 
-### 2. Create a virtual environment
-
-Windows:
-
-```bash
+```powershell
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install pycocoevalcap
 ```
 
-macOS/Linux:
+Linux or macOS:
 
 ```bash
 python -m venv venv
 source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install pycocoevalcap
 ```
 
-### 3. Install dependencies
+If a CUDA-enabled build of PyTorch is required, install the matching `torch` and `torchvision` build first, then install the remaining dependencies.
+
+### Kaggle environment
+
+The training scripts are written around Kaggle-style paths such as `/kaggle/input/...` and `/kaggle/working/...`. A typical Kaggle reproduction flow is:
+
+1. Attach the five Kaggle datasets listed above.
+2. Copy or clone this repository into `/kaggle/working/`.
+3. Confirm that all training-side file paths point to the correct Kaggle inputs in your execution environment.
+4. Run validation, XE training, and SCST training in sequence.
+
+## Reproducibility Package Scope
+
+This release is organized as the complete software package for reproducing the workflow documented in this repository snapshot, including:
+
+- inference and Streamlit deployment
+- configuration for the documented Kaggle training setup
+- reference Kaggle notebook workflow
+- dataset validation
+- XE training entry
+- SCST training entry
+- ASCAP-related helper modules included in this package
+- trained SCST checkpoint and vocabulary used by the current setup
+
+The software assumes the dataset and runtime paths used by the training scripts and Kaggle inputs listed above.
+
+## Expected Data And Path Configuration
+
+The training scripts use the following logical resources:
+
+- `config.ANNOTATION_PATH`
+- `config.VOCAB_PATH`
+- `config.KARPATHY_PATH`
+- `config.FEATURES_PATH`
+- `config.CHECKPOINT_PATH`
+
+These should be configured to match the dataset locations in the target runtime environment.
+
+The bundled `config.py` currently points to the Kaggle dataset paths listed in this README and uses `/kaggle/working/checkpoints` and `/kaggle/working/vocab.json` for training outputs.
+
+## Reproduction Workflow
+
+### 1. Prepare the runtime layout
+
+Place the repository in the working layout expected by the scripts and make sure all configured paths resolve correctly in the target environment.
+
+### 2. Validate dataset loading
+
+Run:
 
 ```bash
-pip install -r requirements.txt
+python test_dataset.py
 ```
 
-If you want GPU support, install the correct CUDA-enabled PyTorch build from the official PyTorch site first, then install the remaining dependencies.
+This script is intended to verify:
 
-## Required Files
+- vocabulary generation
+- dataset loading
+- sequence length setup
+- dataloader construction
+- one-batch feature and caption shapes
 
-The app needs:
+### 3. Run stage-1 XE training
 
-- a model checkpoint
-- a vocabulary JSON file
+Run:
 
-### Vocabulary
+```bash
+python train_xe.py
+```
 
-Supported vocab layouts:
+Expected function:
 
-- `{"word2idx": {...}, "idx2word": {...}}`
-- a flat `{"token": index}` dictionary
+- build vocabulary
+- build datasets
+- build the ASCAP model
+- train with cross-entropy supervision
+- validate on the validation split
+- save the best XE checkpoint
 
-Recommended filename:
+Expected output:
 
 ```text
-vocab.json
+checkpoints/xe_best_model.pt
 ```
 
-Recommended locations:
+### 4. Run stage-2 SCST training
 
-- project root
-- `models/`
+Run:
+
+```bash
+python train_scst.py
+```
+
+Expected function:
+
+- load `xe_best_model.pt`
+- generate sampled and greedy captions
+- compute CIDEr reward with `pycocoevalcap`
+- fine-tune with self-critical sequence training
+- save the best SCST checkpoint
+
+Expected outputs:
+
+```text
+checkpoints/scst_best_model.pt
+checkpoints/scst_checkpoint.pt
+```
+
+Important path note:
+
+`train_scst.py` contains hardcoded Kaggle-style imports, including:
+
+- `/kaggle/working/config.py`
+- `/kaggle/working/dataset.py`
+- `/kaggle/working/models/ascap_transformer.py`
+
+If the code is executed outside Kaggle, those imports must be adapted or the same directory structure must be mirrored locally.
+
+## Inference Workflow
+
+Local inference is possible with the current repository if a compatible checkpoint and matching vocabulary are available.
+
+Recommended placement:
+
+```text
+LDCAP-Caption/
+|-- checkpoints/
+|   |-- scst_best_model.pt
+|-- vocab.json
+```
+
+Checkpoint currently present in this repository:
+
+```text
+checkpoints/scst_best_model.pt
+```
+
+The inference app automatically searches for checkpoints in:
+
 - `checkpoints/`
+- the repository root
+- the parent folder
+- the grandparent folder
 
-### Checkpoint
-
-The app currently prefers these filenames when auto-detecting a model:
+Preferred checkpoint names:
 
 - `xe_best_model.pt`
 - `scst_best_model.pt`
 - `rin_ascap_pipeline.pth`
 
-It also searches for other checkpoint-like files with these extensions:
+## Running The Streamlit Application
 
-- `.pth`
-- `.pt`
-- `.ckpt`
-- `.bin`
-
-Search locations:
-
-- `checkpoints/`
-- project root
-- parent folder of the project
-- grandparent folder of the project
-
-This makes it possible to keep a checkpoint either inside the repo or in a nearby folder on your machine.
-
-## How To Run
-
-Start the Streamlit app:
+Launch locally with:
 
 ```bash
 streamlit run app.py
 ```
 
-Then open:
+Default local address:
 
 ```text
 http://localhost:8501
 ```
 
-## How To Use
+Basic usage:
 
-1. Launch the app with `streamlit run app.py`
-2. Upload an image
-3. Choose a decode mode: `Greedy`, `Beam Search (x3)`, or `Beam Search (x5)`
-4. Set the maximum token length
-5. Click `Generate Caption`
-6. Review the caption, tokens, and generation history
+1. Start the application.
+2. Upload a `jpg`, `jpeg`, `png`, or `webp` image.
+3. Select decoding mode.
+4. Select maximum token length.
+5. Generate a caption.
 
-## Model Loading Behavior
+## Hosting
 
-At startup, the app:
+### Local network hosting
 
-1. searches for a checkpoint
-2. searches for a vocab file
-3. loads `CaptionGenerator` from `inference.py`
-4. builds the transformer from `models/ldcap_transformer.py`
-5. extracts image region features using Torchvision Faster R-CNN
-6. runs decoding to generate the caption
-
-The model is cached using `st.cache_resource`, so repeated runs in the same session do not reload the full model every time.
-
-## Current Inference Pipeline
-
-`inference.py` currently does the following:
-
-- loads checkpoints safely across modern PyTorch versions
-- normalizes several common checkpoint layouts
-- strips `module.` prefixes from DataParallel checkpoints
-- extracts region features from Faster R-CNN detections
-- supports greedy decoding and beam search
-- applies basic decoding cleanup to reduce repeated or invalid tokens
-
-## Notes About Caption Quality
-
-The UI can load a checkpoint successfully even when caption quality is still poor.
-
-This usually happens when:
-
-- the checkpoint was trained with a different feature extraction pipeline
-- the model architecture is only partially compatible
-- the vocabulary does not exactly match training
-- the checkpoint is an earlier training stage and not the best final model
-
-For example, a checkpoint may load correctly because tensor sizes match, but still produce weak captions if its training-time visual features do not match the inference-time features in this app.
-
-## Example Local Setup
-
-```text
-LDCAP/
-|- app.py
-|- inference.py
-|- vocab.json
-|- checkpoints/
-|  |- scst_best_model.pt
-|- models/
-   |- ldcap_transformer.py
+```bash
+streamlit run app.py --server.address 0.0.0.0 --server.port 8501
 ```
 
-Another valid layout:
+Other devices on the same network can access:
 
 ```text
-Final year/
-|- xe_best_model.pt
-|- New folder/
-   |- LDCAP/
-      |- app.py
-      |- inference.py
-      |- vocab.json
-      |- checkpoints/
-      |- models/
+http://YOUR_LOCAL_IP:8501
 ```
 
-Because the app searches parent folders, it can still find `xe_best_model.pt` in that setup.
+### Streamlit cloud-style hosting
 
+This is possible, but users should verify:
 
+- final checkpoint size
+- memory use during Faster R-CNN feature extraction
+- ability to download required torchvision detector weights
+- startup time
 
-## Future Improvements
+## Known Limitations Of This Release
 
-- manual model selector in the UI
-- clearer display of which checkpoint is currently loaded
-- better alignment between training-time and inference-time feature extraction
-- cloud deployment flow for large checkpoints
-- improved caption post-processing
+- The training workflow is path-sensitive and assumes the documented Kaggle-style runtime layout.
+- `pycocoevalcap` is not included in `requirements.txt` and must be installed separately for SCST training.
+- Some scripts depend on Kaggle-hardcoded file paths.
+- A dedicated evaluation script for final benchmark reporting is not included.
+- No `environment.yml` or lock file is included.
 
+## Reuse Note
 
-
+This release is intended to support reproducibility, reuse, and citation of the software package, trained checkpoint, and documented workflow included in this repository snapshot.

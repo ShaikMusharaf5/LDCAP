@@ -1,22 +1,60 @@
-# Python
+# Python bytecode and caches
 __pycache__/
 *.py[cod]
-*.pyo
+*$py.class
+
+# Virtual environments
 venv/
-.env
+.venv/
+env/
+ENV/
 
-# Large model files (upload separately)
-checkpoints/*.pt
-checkpoints/*.pth
-vocab.json
-test_image.jpg
+# Build and packaging artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
 
-# Keep the folder
-!checkpoints/.gitkeep
+# Test, lint, and type-check caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
 
-# OS
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userossc
+*.sln.docstates
+
+# OS files
 .DS_Store
 Thumbs.db
+Desktop.ini
 
-# Streamlit cache
+# Environment and local secrets
+.env
+.env.*
+.python-version
 .streamlit/secrets.toml
+
+# Streamlit runtime cache
+.streamlit/cache/
+
+# Logs
+*.log
+
+# Large local training artifacts
+# Keep the checkpoints folder structure, but ignore generated weight files by default.
+checkpoints/*.pt
+checkpoints/*.pth
+checkpoints/*.ckpt
+!checkpoints/.gitkeep
